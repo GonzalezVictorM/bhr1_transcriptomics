@@ -54,6 +54,7 @@ CAZyGenes <- sugarGenes %>%
 substrate_list <- list(
   cellulases = c("cellulose", "cellulose/hemicellulose"),
   hemicellulases = c("cellulose/hemicellulose", "xylan", "hemicellulose", "mannan", "xyloglucan", "pectin/xylan"),
+  # xylanases = c("xylan", "pectin/xylan"),
   pectinases = c("pectin", "pectin/xylan"),
   ligninases = c("lignin"),
   misc = c("starch", "expansin-like", "inulin"),
@@ -149,20 +150,80 @@ for (substrate_set_name in names(substrate_list)) {
   }
 }
 
-enrichment_results <- enrichment_results %>%
+enrichment_data <- enrichment_results %>%
   rowwise() %>%
   mutate(
     pval_oe = phyper(set_oeg - 1, total_oeg, total_genes - total_oeg, set_genes, lower.tail = FALSE),
     pval_ue = phyper(set_ueg - 1, total_ueg, total_genes - total_ueg, set_genes, lower.tail = FALSE)
   ) %>%
-  ungroup()
-
-testing <- enrichment_results %>%
-  filter(ref_sub == "glucose_5d")
-
-p <- testing %>%
+  ungroup() %>%
+  # Adjust p-values for multiple testing (FDR)
+  mutate(
+    padj_oe = p.adjust(pval_oe, method = "fdr"),
+    padj_ue = p.adjust(pval_ue, method = "fdr"),
+    # Significance indicator for overexpression
+    sig_oe = case_when(
+      padj_oe < 0.05 ~ "Significant",
+      TRUE ~ "Non-significant"),
+    sig_ue = case_when(
+      padj_ue < 0.05 ~ "Significant",
+      TRUE ~ "Non-significant")
+  ) %>%
+  # Order strain_condition by data_mat columns for consistency
+  mutate(strain_condition = factor(strain_condition, levels = rev(colnames(data_mat)))) %>%
+  # Order gene_set by total overexpressed genes for better visualization
   arrange(desc(set_oeg)) %>%
-  mutate(strain_condition = factor(strain_condition, rev(colnames(data_mat)))) %>%
-  ggplot(aes(x=gene_set, y=strain_condition, size = pval_oe, color=set_oeg)) +
-  geom_point(alpha=0.5)
-ggsave(filename = "test.pdf", plot = p, width = 8, height = 6)
+  mutate(gene_set = factor(gene_set, levels = names(substrate_list)))
+
+for (substrate in ref_conditions) {
+  p_data <- enrichment_data %>%
+    filter(ref_sub == substrate, gene_set !="CAZymes") 
+  p <-  p_data %>%
+    ggplot(aes(x = gene_set, y = strain_condition, size = -log10(padj_oe), color = set_oeg)) +
+    geom_point(aes(shape = sig_oe), alpha = 0.8) +
+    # Custom color scale for overexpressed gene counts
+    scale_color_gradientn(
+      colors = c("blue", "white", "red"),
+      name = "Overexpressed Genes",
+      limits = c(0, max(p_data$set_oeg, na.rm = TRUE)),
+      breaks = seq(0, max(p_data$set_oeg, na.rm = TRUE), by = ceiling(max(p_data$set_oeg, na.rm = TRUE)/5))
+    ) +
+    # Custom size scale for -log10 adjusted p-values
+    scale_size_continuous(
+      name = "-Log10 Adjusted P-value (Overexpression)",
+      range = c(2, 10),
+      breaks = c(0, 1, 2, 3, 4),
+      labels = c("0", "1", "2", "3", "4+")
+    ) +
+    # Shape for significance
+    scale_shape_manual(
+      name = "Significance (FDR < 0.05)",
+      values = c("Significant" = 16, "Non-significant" = 1)
+    ) +
+    # Improve axis labels and theme
+    labs(
+      title = paste0("Gene Set Enrichment for Overexpressed CAZy Genes (Ref: ",substrate,")"),
+      x = "CAZy Gene Set",
+      y = "Strain and Condition"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+      axis.text.y = element_text(size = 10),
+      plot.title = element_text(hjust = 0.5, face = "bold"),
+      legend.position = "right",
+      legend.box = "vertical",
+      legend.margin = margin(t = 0, r = 10, b = 0, l = 10)
+    ) +
+    # Ensure y-axis labels are clear
+    scale_y_discrete(labels = function(x) gsub("\\.", "-", x))
+  
+  # Save plot
+  ggsave(
+    filename = file.path(out_dir, paste0("enrichment_plot_ref_",substrate,".pdf")),
+    plot = p,
+    width = 10,
+    height = 8,
+    device = "pdf"
+  )
+}

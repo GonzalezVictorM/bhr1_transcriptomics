@@ -15,3 +15,6 @@ These to codes run the shrinking, extraction of the fold change (FC) and false d
 
 ## DEG-data-wrangling.R
 It takes the counts, fpkms, vst counts, and labels and removes outliers and conditions not present in both strains, as well as calculates the avg of the biological replicates. Finally, it generates the DEG matrixes with + for overexpressed and - for underexpressed according to the classification done in fold-change.R
+
+## CAZy_analysis
+Using the previously tidied data, it makes heat maps and gene set enrichment analysis depending on the type of enzymes (eg. cellulases, hemicellulases).
