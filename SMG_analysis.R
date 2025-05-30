@@ -17,7 +17,7 @@ out_dir <- "06_SMGanalysis"
 mut_strain <- "bmtr3_35-2"
 
 # Ensure input directories exist
-required_dirs <- c(raw_data_dir, tidy_data_dir, qc_dir, dds_dir, deg_dir)
+required_dirs <- c(raw_data_dir, tidy_data_dir, qc_dir, dds_dir, deg_dir, tidy_FC_dir)
 lapply(required_dirs, function(d) if (!dir.exists(d)) stop("Directory not found: ", d))
 
 # Create output directory if missing
