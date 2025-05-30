@@ -21,3 +21,6 @@ Using the previously tidied data, it makes heat maps and gene set enrichment ana
 
 ## ST_analysis
 A modified version of the CAZy_analysis code to perform the same tasks on sugar transporters.
+
+## SMG_analysis
+A modified version of the ST_analysis code to perform the same tasks on transcription factor genes.
