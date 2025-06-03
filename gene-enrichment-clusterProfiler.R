@@ -26,31 +26,37 @@ TERM2NAME <- go_annotations %>% select(go_id, go_term) %>% distinct()
 # Load expression metadata
 data_labels <- read_csv(file.path(data_dir, "tidy_all_strains_labels.csv"), show_col_types = FALSE)
 ref_conditions <- unique(data_labels$condition)
-strain_conditions <- unique(data_labels$strain_condition)
+strain_conditions <- gsub("-",".",unique(data_labels$strain_condition))
+
+
+ref_condition <- ref_conditions[1]
+strain_condition <- strain_conditions[2]
+deg_type <- "oe"
 
 # Loop through reference and strain conditions
 for (ref_condition in ref_conditions) {
   message("Ref condition: ", ref_condition)
   
-  deg_path <- file.path(data_dir, paste0("tidy_all_strains_DEGmat_ref_", ref_condition, ".csv"))
-  if (!file.exists(deg_path)) {
+  deg_mat_path <- file.path(data_dir, paste0("tidy_all_strains_DEGmat_ref_", ref_condition, ".csv"))
+  if (!file.exists(deg_mat_path)) {
     warning("Missing DEG matrix for ref: ", ref_condition)
     next
   }
   
-  deg_mat <- read_csv(deg_path, show_col_types = FALSE) %>% column_to_rownames("X1")
+  deg_mat <- read.csv(deg_mat_path, row.names = 1)
+  deg_mat[is.na(deg_mat)] <- " "
   
   for (strain_condition in strain_conditions) {
     message("  → Strain condition: ", strain_condition)
     
-    if (!strain_condition %in% colnames(deg_mat)) {
-      warning("Missing column in DEG matrix: ", strain_condition)
+    # Skip if strain condition is same as reference
+    if (stringr::str_ends(strain_condition, ref_condition)) {
+      message("Skipping self-comparison: ", strain_condition, " vs ref ", ref_condition)
       next
     }
     
-    # Skip if self-comparison
-    if (str_ends(strain_condition, ref_condition)) {
-      message("    Skipping self-comparison")
+    if (!strain_condition %in% colnames(deg_mat)) {
+      warning("Missing column in DEG matrix: ", strain_condition)
       next
     }
     

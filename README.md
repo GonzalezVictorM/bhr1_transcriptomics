@@ -32,4 +32,4 @@ A modified version of the ST_analysis code to perform the same tasks on sugar me
 A modified version of the CAZy_analysis code to perform the same tasks on transcription factor genes.
 
 ## gene-enrichment_topGO.R and [...]_clusterProfiler.R
-A gene enrichment pipeline using the topGO and clusterProfiler packages respectively.
+A gene enrichment pipeline using the topGO and clusterProfiler packages respectively. For now the clusterProfiler is not usable as it is much more complicated to work with non-model organisms.
