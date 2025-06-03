@@ -33,3 +33,9 @@ A modified version of the CAZy_analysis code to perform the same tasks on transc
 
 ## gene-enrichment_topGO.R and [...]_clusterProfiler.R
 A gene enrichment pipeline using the topGO and clusterProfiler packages respectively. For now the clusterProfiler is not usable as it is much more complicated to work with non-model organisms.
+
+## aggregate_topGO_results.R
+Aggregates all the files into a single csv.
+
+## GO-enrichment-plots.R
+Creates bubble plots of the enriched gene sets.

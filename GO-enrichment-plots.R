@@ -10,19 +10,23 @@ input_file <- file.path(enrich_dir, "aggregated_topGO_results.csv")
 output_dir <- "08_GOplots"
 if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
+# Select export type
+export_file <- "png"
+# export_file <- "pdf"
+
 # Define the plotting order
-strain_condition_order <- c("CBS_464_glycerol_5d",
-                            "CBS_464_glucose_5d",
-                            "CBS_464_mannose_5d",
-                            "CBS_464_cellulose_5d",
-                            "CBS_464_guargum_5d",
-                            "CBS_464_xylan_5d",
-                            "bmtr3_35.2_glycerol_5d",
-                            "bmtr3_35.2_glucose_5d",
-                            "bmtr3_35.2_mannose_5d",
-                            "bmtr3_35.2_cellulose_5d",
-                            "bmtr3_35.2_guargum_5d",
-                            "bmtr3_35.2_xylan_5d")
+# strain_condition_order <- c("CBS_464_glycerol_5d",
+#                             "CBS_464_glucose_5d",
+#                             "CBS_464_mannose_5d",
+#                             "CBS_464_cellulose_5d",
+#                             "CBS_464_guargum_5d",
+#                             "CBS_464_xylan_5d",
+#                             "bmtr3_35.2_glycerol_5d",
+#                             "bmtr3_35.2_glucose_5d",
+#                             "bmtr3_35.2_mannose_5d",
+#                             "bmtr3_35.2_cellulose_5d",
+#                             "bmtr3_35.2_guargum_5d",
+#                             "bmtr3_35.2_xylan_5d")
 strain_condition_order <- c("CBS_464_glycerol_5d","bmtr3_35.2_glycerol_5d",
                             "CBS_464_glucose_5d","bmtr3_35.2_glucose_5d",
                             "CBS_464_mannose_5d","bmtr3_35.2_mannose_5d",
@@ -52,7 +56,7 @@ ref_conditions <- unique(go_data$ref_condition)
 deg_types <- c("oe", "ue", "deg")
 p_val_cutoff <- 0.05   # cutoff for significance
 
-# Loop through the reference conditions and
+# Loop through the reference conditions and the deg type
 for (ref_condition in ref_conditions) {
   go_ref_data <- go_data %>%
     filter(ref_condition == !!ref_condition)
@@ -113,11 +117,11 @@ for (ref_condition in ref_conditions) {
       
       # Save plot
       ggsave(
-        filename = file.path(output_dir, paste0("topGO_enrichment_plot_ref_",ref_condition,"_",deg_type,".pdf")),
+        filename = file.path(output_dir, paste0("topGO_enrichment_plot_ref_",ref_condition,"_",deg_type,".", export_file)),
         plot = p,
         width = 20,
         height = 10,
-        device = "pdf")
+        device = export_file)
     }
   }
 }

@@ -14,8 +14,30 @@ deg_dir <- "04_DEGanalysis"
 tidy_FC_dir <- "05_TidyFC"
 out_dir <- "06_TFanalysis"
 
-# Define your mutant strain
-mut_strain <- "bmtr3_35-2"
+# Select export type
+# export_file <- "png"
+export_file <- "pdf"
+
+# Define the plotting order
+# strain_condition_order <- c("CBS_464_glycerol_5d",
+#                             "CBS_464_glucose_5d",
+#                             "CBS_464_mannose_5d",
+#                             "CBS_464_cellulose_5d",
+#                             "CBS_464_guargum_5d",
+#                             "CBS_464_xylan_5d",
+#                             "bmtr3_35.2_glycerol_5d",
+#                             "bmtr3_35.2_glucose_5d",
+#                             "bmtr3_35.2_mannose_5d",
+#                             "bmtr3_35.2_cellulose_5d",
+#                             "bmtr3_35.2_guargum_5d",
+#                             "bmtr3_35.2_xylan_5d")
+strain_condition_order <- c("CBS_464_glycerol_5d","bmtr3_35.2_glycerol_5d",
+                            "CBS_464_glucose_5d","bmtr3_35.2_glucose_5d",
+                            "CBS_464_mannose_5d","bmtr3_35.2_mannose_5d",
+                            "CBS_464_cellulose_5d","bmtr3_35.2_cellulose_5d",
+                            "CBS_464_guargum_5d","bmtr3_35.2_guargum_5d",
+                            "CBS_464_xylan_5d","bmtr3_35.2_xylan_5d" )
+
 
 # Ensure input directories exist
 required_dirs <- c(raw_data_dir, tidy_data_dir, qc_dir, dds_dir, deg_dir,tidy_FC_dir)
@@ -26,19 +48,7 @@ if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 
 # Load expression matrix
 data_mat <- read.csv(file.path(tidy_FC_dir, "tidy_all_strains_vst_avg.csv"), row.names = 1) %>% # change to other transformation if you want
-  select( # sadly I have not figured out how to automate this part
-    CBS_464_glycerol_5d,
-    CBS_464_glucose_5d,
-    CBS_464_mannose_5d,
-    CBS_464_cellulose_5d,
-    CBS_464_guargum_5d,
-    CBS_464_xylan_5d,
-    bmtr3_35.2_glycerol_5d,
-    bmtr3_35.2_glucose_5d,
-    bmtr3_35.2_mannose_5d,
-    bmtr3_35.2_cellulose_5d,
-    bmtr3_35.2_guargum_5d,
-    bmtr3_35.2_xylan_5d)
+  select(all_of(strain_condition_order))
 
 data_labels <- read.csv(file.path(tidy_FC_dir, "tidy_all_strains_labels.csv"), row.names = 1)
 ref_conditions <- unique(data_labels$condition)
@@ -63,7 +73,7 @@ hm_row_labels <- TFGenes %>%
 # Store enrichment results
 enrichment_results <- data.frame()
 
-condition <- ref_conditions[5] # for debugging purposes
+# condition <- ref_conditions[5] # for debugging purposes
 
 # Loop over conditions
 for (condition in ref_conditions) {
@@ -74,7 +84,7 @@ for (condition in ref_conditions) {
   hm_DEG_mat <- DEG_mat[rownames(hm_row_labels), colnames(hm_data_mat), drop = FALSE]
   
   # Heatmap output
-  hm_file_name <- file.path(out_dir, paste0("heatmap_TF_ref_", condition, ".pdf"))
+  hm_file_name <- file.path(out_dir, paste0("heatmap_TF_ref_", condition, ".", export_file))
   
   pheatmap(hm_data_mat,
            # scale = "row",
@@ -89,5 +99,6 @@ for (condition in ref_conditions) {
            fontsize_row = 6,
            fontsize_col = 6,
            height = nrow(hm_data_mat)/7,
+           gaps_col = seq(from = 2, to = ncol(hm_data_mat)-2, by = 2),
            filename = hm_file_name)
 }
