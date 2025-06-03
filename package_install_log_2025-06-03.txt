@@ -1,0 +1,9 @@
+Date	Package	Version
+2025-06-03	tidyverse	2.0.0
+2025-06-03	Hmisc	5.2.3
+2025-06-03	pheatmap	1.0.12
+2025-06-03	DESeq2	1.48.1
+2025-06-03	vsn	3.76.0
+2025-06-03	apeglm	1.30.0
+2025-06-03	topGO	2.59.0
+2025-06-03	clusterProfiler	4.16.0

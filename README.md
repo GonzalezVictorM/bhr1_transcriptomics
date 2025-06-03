@@ -1,6 +1,9 @@
 # bhr1_transcriptomics
 Analysis of the transcriptomic data from bhr1 TF
 
+## install-packages.R
+Install the packages used in this pipeline and writes a file with the versions that are installed.
+
 ## data-wrangling.R
 Reorganizes counts and sample master data (MD) keeping all conditions present in either strains.
 
@@ -17,10 +20,16 @@ These to codes run the shrinking, extraction of the fold change (FC) and false d
 It takes the counts, fpkms, vst counts, and labels and removes outliers and conditions not present in both strains, as well as calculates the avg of the biological replicates. Finally, it generates the DEG matrixes with + for overexpressed and - for underexpressed according to the classification done in fold-change.R
 
 ## CAZy_analysis.R
-Using the previously tidied data, it makes heat maps and gene set enrichment analysis depending on the type of enzymes (eg. cellulases, hemicellulases).
+Using the previously tidied data, it makes heatmaps and gene set enrichment analysis depending on the type of enzymes (eg. cellulases, hemicellulases).
 
 ## ST_analysis
-A modified version of the CAZy_analysis code to perform the same tasks on sugar transporters.
+A modified version of the CAZy_analysis code to perform the same tasks on sugar transporter genes.
 
 ## SMG_analysis
-A modified version of the ST_analysis code to perform the same tasks on transcription factor genes.
+A modified version of the ST_analysis code to perform the same tasks on sugar metabolic genes.
+
+## TF_analysis
+A modified version of the CAZy_analysis code to perform the same tasks on transcription factor genes.
+
+## gene-enrichment_topGO.R and [...]_clusterProfiler.R
+A gene enrichment pipeline using the topGO and clusterProfiler packages respectively.
