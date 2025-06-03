@@ -3,6 +3,7 @@ rm(list = ls())
 
 # Load needed packages
 library(tidyverse)
+library(pheatmap)
 
 # Define and validate paths
 raw_data_dir <- "00_RawData"
