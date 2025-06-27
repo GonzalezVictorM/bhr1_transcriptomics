@@ -36,13 +36,13 @@ strain_conditions <- gsub("-",".",unique(data_labels$strain_condition))
 log_file <- file.path(out_dir, "topGO_log.txt")
 sink(log_file, append = TRUE)
 
- # ref_condition <- ref_conditions[1]
- # strain_condition <- strain_conditions[2]
- # deg_type<- "oe"
- # ontology <- "BP"
+ ref_condition <- strain_conditions[2]
+ strain_condition <- strain_conditions[7]
+ deg_type<- "oe"
+ ontology <- "BP"
 
 # Loop over each ref and strain condition
-for (ref_condition in ref_conditions) {
+for (ref_condition in strain_conditions) {
   message("Ref condition: ", ref_condition)
   
   deg_mat_path <- file.path(tidy_FC_dir, paste0("tidy_all_strains_DEGmat_ref_", ref_condition, ".csv"))
