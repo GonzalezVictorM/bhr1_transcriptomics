@@ -171,29 +171,25 @@ if (any(is.na(all_DEG_data$ref_strain_file) |
 }
 
 # Filter to the self‐vs‐self contrast for the chosen reference
-# comparison = conditions_in_mutant[2] # for debugging
-# strain = strains[1] # for debugging
+# comparison = conditions_in_mutant[1] # for debugging
 for (comparison in conditions_in_mutant) {
-  for (strain in strains) {
-    hm_DEG_mat <- all_DEG_data %>%
-      filter(ref_condition == comparison,
-             ref_strain == strain
-      ) %>%
-      # Map Expression → symbol
-      mutate(DEG = case_when(
-        Expression == "Overexpressed"  ~ "+",
-        Expression == "Underexpressed" ~ "-",
-        TRUE                           ~ " "
-      )) %>%
-      # Pivot to wide matrix form
-      select(protein_id,condition, DEG) %>%
-      pivot_wider(names_from = condition,
-                  values_from = DEG) %>%
-      column_to_rownames("protein_id") %>%
-      # add the reference columns
-      mutate(!!!set_names(c(" "), paste0(strain,"_",comparison))) %>%
-      as.matrix()
-    
-    write.csv(hm_DEG_mat, file = file.path(out_dir,paste0("tidy_all_strains_DEGmat_ref_", strain,"_",comparison,".csv")))
-  }
+  hm_DEG_mat <- all_DEG_data %>%
+    filter(ref_condition == comparison,
+           ref_strain == sample_strain) %>%
+    # Map Expression → symbol
+    mutate(DEG = case_when(
+      Expression == "Overexpressed"  ~ "+",
+      Expression == "Underexpressed" ~ "-",
+      TRUE                           ~ " "
+    )) %>%
+    # Pivot to wide matrix form
+    select(protein_id,condition, DEG) %>%
+    pivot_wider(names_from = condition,
+                values_from = DEG) %>%
+    column_to_rownames("protein_id") %>%
+    # add the reference columns
+    mutate(!!!set_names(c(" "," "), paste0(strains,"_",comparison))) %>%
+    as.matrix()
+  
+  write.csv(hm_DEG_mat, file = file.path(out_dir,paste0("tidy_all_strains_DEGmat_ref_",comparison,".csv")))
 }

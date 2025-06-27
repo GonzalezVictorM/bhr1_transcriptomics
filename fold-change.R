@@ -32,7 +32,7 @@ DEG <- function(x) {
 # List all DESeq2 model files
 dds_files <- list.files(dds_dir, pattern = "^dds_.*\\.RData$", full.names = TRUE)
 
-#dds_file <- dds_files[20] # used for debugging
+# dds_file <- dds_files[7] # used for debugging
 # Loop through each model file
 for (dds_file in dds_files) {
   message("🔍 Processing: ", basename(dds_file))
@@ -51,6 +51,9 @@ for (dds_file in dds_files) {
   # Build simplified contrast labels
   contrast_labels <- sapply(coef_names, function(x) {
     gsub("strain_condition_", "", x)
+  }, USE.NAMES = TRUE)
+  contrast_labels <- sapply(contrast_labels, function(x) {
+    gsub("condition_", "", x)
   }, USE.NAMES = TRUE)
   
   # Prepare result table

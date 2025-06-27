@@ -30,17 +30,16 @@ gene2go <- go_annotations_raw %>%
 # Load expression metadata
 data_labels <- read.csv(file.path(tidy_FC_dir, "tidy_all_strains_labels.csv"), row.names = 1)
 ref_conditions <- unique(data_labels$condition)
-strain_conditions <- unique(data_labels$strain_condition)
-strain_conditions <- gsub("-",".",strain_conditions)[7:12]
+strain_conditions <- gsub("-",".",unique(data_labels$strain_condition))
 
 # Start logging
 log_file <- file.path(out_dir, "topGO_log.txt")
 sink(log_file, append = TRUE)
 
- # ref_condition <- ref_conditions[1]
- # strain_condition <- strain_conditions[2]
- # deg_type<- "oe"
- # ontology <- "BP"
+ ref_condition <- ref_conditions[1]
+ strain_condition <- strain_conditions[2]
+ deg_type<- "oe"
+ ontology <- "BP"
 
 # Loop over each ref and strain condition
 for (ref_condition in ref_conditions) {

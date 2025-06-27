@@ -22,7 +22,8 @@ all_counts <- read.csv(file.path(tidy_data_dir, "all_strains_counts.csv"))
 conditions_in_mutant <- all_labels %>% 
   filter(strain == "bmtr3_35-2") %>% 
   .$condition %>% 
-  as.character() %>% unique
+  as.character() %>% unique %>%
+  .[2:6]
 
 all_labels <- all_labels %>%
   filter(condition %in% conditions_in_mutant)
