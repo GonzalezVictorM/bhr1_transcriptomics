@@ -170,7 +170,7 @@ meanSdPlot(assay(vsd))
 meanSdPlot(assay(rld))
 
 # Select the smoothest transformation
-dds_transformed <- rld
+dds_transformed <- vsd
 
 # Filter the genes based on counts > 10
 selected_genes <- ntd %>% assay %>% data.frame() %>%
@@ -181,16 +181,18 @@ selected_genes <- ntd %>% assay %>% data.frame() %>%
 selectedgenecols <- which(rownames(dds_clean) %in% selected_genes$protein_id) %>%
   unique()
 
-dds_clean <- dds[selectedgenecols, ]
+dds_clean <- dds_clean[selectedgenecols, ]
 dds_transformed <- dds_transformed[selectedgenecols, ]
 
 # Perform PCA (edit to display the groupings you want)
-pca_data <- plotPCA(dds_transformed, intgroup = c("strain", "condition"), returnData = TRUE)
+pca_data <- plotPCA(dds_transformed, intgroup = c("strain", "condition"), returnData = TRUE, ntop = 6954)
 percentVar <- round(100 * attr(pca_data, "percentVar"))
 
 # Save PCA plot
 pca_plot <- ggplot(pca_data, aes(PC1, PC2, color = condition, shape = strain)) +
   geom_point(size = 4) +
+  stat_ellipse(aes(group = condition, color = condition), type = "norm", level = 0.95) +
+  xlim(c(-100,100)) + 
   xlab(paste0("PC1: ", percentVar[1], "% variance")) +
   ylab(paste0("PC2: ", percentVar[2], "% variance")) +
   theme_minimal(base_size = 14) +

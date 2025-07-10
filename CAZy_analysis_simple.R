@@ -58,13 +58,16 @@ sugarGenes <- read.csv(file.path(raw_data_dir,"Dsqul_masterList_genes_v5.csv")) 
   mutate(protein_id = as.character(protein_id))
 
 CAZyGenes <- sugarGenes %>%
-  filter(predicted_function == "CAZy") %>%
+  filter(predicted_function == "CAZy",
+         enzyme_code != "EXPN"
+         ) %>%
   mutate(label = paste(protein_id, enzyme_code, gene_name, family, substrate, sep = " - "))
 
 # Define substrate groups
 substrate_list <- list(
   cellulases = c("cellulose", "cellulose/hemicellulose"),
   hemicellulases = c("cellulose/hemicellulose", "xylan", "hemicellulose", "mannan", "xyloglucan", "pectin/xylan"),
+  hemi_cellulases = c("cellulose", "cellulose/hemicellulose", "xylan", "hemicellulose", "mannan", "xyloglucan", "pectin/xylan"),
   # xylanases = c("xylan", "pectin/xylan"),
   pectinases = c("pectin", "pectin/xylan"),
   ligninases = c("lignin"),
